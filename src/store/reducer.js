@@ -94,6 +94,8 @@ export function appReducer(state, action) {
             paidBy: '',
             splitAmong: [],
             subtasks: [],
+            lat: '',
+            lng: '',
           },
         ],
       }));

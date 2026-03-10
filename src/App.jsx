@@ -10,7 +10,12 @@ import { ACTIONS } from './store/actions';
 import { initialData } from './store/initialData';
 import { appReducer } from './store/reducer';
 import { loadData, saveData } from './store/storage';
-import { downloadJson, parseJsonFile } from './utils/exportImport';
+import {
+  downloadJson,
+  downloadMarkdown,
+  normalizeImportedData,
+  parseJsonFile,
+} from './utils/exportImport';
 
 export default function App() {
   const [data, dispatch] = useReducer(appReducer, initialData, (seed) => loadData(seed));
@@ -43,18 +48,24 @@ export default function App() {
     downloadJson(data);
   };
 
+  const handleExportMarkdown = () => {
+    if (!activePlan) return;
+    downloadMarkdown(activePlan);
+  };
+
   const handleImport = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       const parsed = await parseJsonFile(file);
-      if (!parsed?.plans?.length) {
+      const normalized = normalizeImportedData(parsed);
+      if (!normalized?.plans?.length) {
         alert('JSON 結構不正確');
         return;
       }
-      dispatch({ type: ACTIONS.SET_DATA, payload: parsed });
-      setActivePlanId(parsed.plans[0].id);
+      dispatch({ type: ACTIONS.SET_DATA, payload: normalized });
+      setActivePlanId(normalized.plans[0].id);
       setActiveDayId('checklist');
     } catch {
       alert('匯入失敗，請確認 JSON 格式');
@@ -69,7 +80,11 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Header onExport={handleExport} onImport={handleImport} />
+      <Header
+        onExport={handleExport}
+        onExportMarkdown={handleExportMarkdown}
+        onImport={handleImport}
+      />
 
       <PlanTabs
         plans={data.plans}

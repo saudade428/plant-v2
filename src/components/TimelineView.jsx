@@ -7,6 +7,19 @@ export default function TimelineView({ planId, day, dispatch }) {
     return <div className="panel">請先選擇天數。</div>;
   }
 
+  const openDayRoute = () => {
+    const points = day.nodes
+      .filter((node) => node.lat && node.lng)
+      .map((node) => `${node.lat},${node.lng}`);
+
+    if (!points.length) {
+      alert('此天尚未設定任何座標');
+      return;
+    }
+
+    window.open(`https://www.google.com/maps/dir/${points.join('/')}`, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="panel">
       <div className="day-head">
@@ -36,6 +49,55 @@ export default function TimelineView({ planId, day, dispatch }) {
         >
           + 新節點
         </button>
+        <button onClick={openDayRoute}>開啟當日導航</button>
+      </div>
+
+      <div className="node-row split-3">
+        <input
+          placeholder="天氣條件 (sunny/rainy...)"
+          value={day.weather?.condition || ''}
+          onChange={(e) =>
+            dispatch({
+              type: ACTIONS.UPDATE_DAY_FIELD,
+              payload: {
+                planId,
+                dayId: day.id,
+                field: 'weather',
+                value: { ...(day.weather || {}), condition: e.target.value },
+              },
+            })
+          }
+        />
+        <input
+          placeholder="最高溫"
+          value={day.weather?.tempHigh || ''}
+          onChange={(e) =>
+            dispatch({
+              type: ACTIONS.UPDATE_DAY_FIELD,
+              payload: {
+                planId,
+                dayId: day.id,
+                field: 'weather',
+                value: { ...(day.weather || {}), tempHigh: e.target.value },
+              },
+            })
+          }
+        />
+        <input
+          placeholder="最低溫"
+          value={day.weather?.tempLow || ''}
+          onChange={(e) =>
+            dispatch({
+              type: ACTIONS.UPDATE_DAY_FIELD,
+              payload: {
+                planId,
+                dayId: day.id,
+                field: 'weather',
+                value: { ...(day.weather || {}), tempLow: e.target.value },
+              },
+            })
+          }
+        />
       </div>
 
       <div className="node-list">
@@ -135,8 +197,45 @@ export default function TimelineView({ planId, day, dispatch }) {
                 placeholder="花費"
               />
             </div>
+
+            <div className="node-row split-2">
+              <input
+                value={node.lat || ''}
+                onChange={(e) =>
+                  dispatch({
+                    type: ACTIONS.UPDATE_NODE_FIELD,
+                    payload: { planId, dayId: day.id, nodeId: node.id, field: 'lat', value: e.target.value },
+                  })
+                }
+                placeholder="緯度 lat"
+              />
+              <input
+                value={node.lng || ''}
+                onChange={(e) =>
+                  dispatch({
+                    type: ACTIONS.UPDATE_NODE_FIELD,
+                    payload: { planId, dayId: day.id, nodeId: node.id, field: 'lng', value: e.target.value },
+                  })
+                }
+                placeholder="經度 lng"
+              />
+            </div>
           </div>
         ))}
+      </div>
+
+      <div className="journal-wrap">
+        <h3>旅行日誌</h3>
+        <textarea
+          value={day.journal || ''}
+          onChange={(e) =>
+            dispatch({
+              type: ACTIONS.UPDATE_DAY_FIELD,
+              payload: { planId, dayId: day.id, field: 'journal', value: e.target.value },
+            })
+          }
+          placeholder="記錄今天的重點與心得"
+        />
       </div>
     </div>
   );

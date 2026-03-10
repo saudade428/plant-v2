@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ onExport, onImport }) {
+export default function Header({ onExport, onExportMarkdown, onImport }) {
   return (
     <header className="header">
       <div>
@@ -9,6 +9,7 @@ export default function Header({ onExport, onImport }) {
       </div>
       <div className="header-actions">
         <button onClick={onExport}>匯出 JSON</button>
+        <button onClick={onExportMarkdown}>匯出 Markdown</button>
         <label className="import-btn">
           匯入 JSON
           <input type="file" accept=".json" onChange={onImport} />
