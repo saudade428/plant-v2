@@ -35,6 +35,21 @@ npm run build
 npm run preview
 ```
 
+## 測試
+
+目前已加入最小 smoke tests，先覆蓋 reducer 的核心資料流：
+
+- 新增 Day
+- 節點跨天移動
+- 新增 checklist 分類
+- 新增 expense item
+
+執行方式：
+
+```bash
+npm test
+```
+
 ## 部署到 GitHub Pages
 
 ### 方式 A: 自動部署 (推薦)
@@ -64,3 +79,4 @@ npm run deploy
 1. 移植舊版地圖/拖曳排序/PDF 輸出
 2. 將 reducer 拆分成 domain slices
 3. 補上 E2E 測試 (Playwright)
+4. 擴充 reducer 與 utils 的測試覆蓋率
